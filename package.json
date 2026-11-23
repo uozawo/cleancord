@@ -1,0 +1,21 @@
+{
+  "name": "cleancord",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Development tooling for Cleancord. The extension itself (extension/) has no dependencies.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "test": "node tests/unit.mjs && node tests/core_extra.mjs && node tests/render_extra.mjs",
+    "test:browser": "python3 tests/browser_test.py",
+    "lint": "node scripts/check-syntax.mjs",
+    "build": "node scripts/build-release.mjs"
+  },
+  "devDependencies": {
+    "acorn": "^8.14.0",
+    "fake-indexeddb": "^6.0.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

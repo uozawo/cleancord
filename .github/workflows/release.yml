@@ -1,0 +1,36 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - name: Check the tag matches manifest.json
+        run: |
+          VERSION=$(node -p "require('./extension/manifest.json').version")
+          test "v$VERSION" = "$GITHUB_REF_NAME" || { echo "Tag $GITHUB_REF_NAME does not match manifest version $VERSION"; exit 1; }
+      - name: Build
+        run: SOURCE_DATE_EPOCH=$(git log -1 --format=%ct) npm run build
+      - name: Release notes from CHANGELOG.md
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          awk -v v="$VERSION" '$0 ~ "^## \\[?"v"\\]?" {f=1; next} f && /^## / {exit} f' CHANGELOG.md > notes.md
+          printf '\n---\n**Verify your download:** compare `sha256sum %s` with SHA256SUMS.txt. Only download Cleancord from this repository'"'"'s Releases page.\n' "cleancord-$GITHUB_REF_NAME.zip" >> notes.md
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/*.zip dist/SHA256SUMS.txt --title "Cleancord $GITHUB_REF_NAME" --notes-file notes.md

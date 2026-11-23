@@ -1,0 +1,33 @@
+name: Browser end-to-end
+
+# Loads the real extension in Chrome for Testing and drives it against a fake Discord API.
+# Run it manually from the Actions tab (it takes a few minutes).
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright and Chrome for Testing
+        run: |
+          pip install playwright pillow
+          python -m playwright install-deps chromium
+          npx --yes @puppeteer/browsers install chrome@stable --path "$HOME/cft" | tee cft.txt
+          echo "CHROME_PATH=$(tail -n1 cft.txt | cut -d' ' -f2-)" >> "$GITHUB_ENV"
+      - run: python tests/browser_test.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-screenshots
+          path: tests/.output/

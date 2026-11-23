@@ -1,0 +1,50 @@
+name: Bug report
+description: Something doesn't work as expected
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! **Never paste your Discord token**, and please remove personal details
+        (names, message text, server names, IDs) from logs and screenshots before posting.
+  - type: input
+    id: version
+    attributes:
+      label: Cleancord version
+      description: Shown on chrome://extensions
+      placeholder: 1.0.0
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: Chrome 131 on Windows 11
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options: [Connecting, Browsing / feed, Search & filters, Purge, Bulk edit / delete, Export, Data package, Tasks / resume, Other]
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open a server channel
+        2. Click Purge…
+  - type: textarea
+    id: log
+    attributes:
+      label: Activity log (optional)
+      description: Use "Copy" above the activity log on the right. Remove anything personal first.
+      render: text
